@@ -1,0 +1,64 @@
+# https://stackoverflow.com/questions/53988649/docker-sequelizeconnectionrefusederror-connect-econnrefused-127-0-0-13306
+
+version: '3.1'
+
+services:
+  api:
+    build: .   # запускаем Dockerfile
+    container_name: nest-api
+    restart: always
+    ports:
+      - 3000:3000
+    volumes:
+      - ./.env:/app/.env
+    depends_on:
+      db:
+        condition: service_started
+    networks:
+      - db
+
+  db:
+    image: mariadb
+    container_name: db
+    restart: always
+    environment:
+      DB_HOSTNAME: db
+      MYSQL_USER: root
+      MYSQL_ROOT_PASSWORD: example
+      MYSQL_DATABASE: courseNest
+    volumes:
+      - ./database:/var/lib/mysql
+    ports:
+      - 3306:3306
+    networks:
+      - db
+
+# ========== Это adminer
+  adminer:
+    image: adminer
+    container_name: adminer
+    restart: always
+    ports:
+      - 8080:8080
+    depends_on:
+      - db
+    networks:
+      - db
+
+# ========== Это phpmyadmin
+  phpmyadmin:
+    image: phpmyadmin
+    container_name: phpmyadmin
+    restart: always
+    ports:
+      - 8080:80
+    depends_on:
+      - db
+    environment:
+      - PMA_ARBITRARY=1
+    networks:
+      - db
+
+networks:
+  db:
+    driver: bridge

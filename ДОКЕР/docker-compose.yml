@@ -22,8 +22,6 @@ services:
     container_name: db
     restart: always
     environment:
-      DB_HOSTNAME: db
-      MYSQL_USER: root
       MYSQL_ROOT_PASSWORD: example
       MYSQL_DATABASE: courseNest
     volumes:
